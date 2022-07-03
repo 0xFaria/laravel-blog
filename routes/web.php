@@ -1,7 +1,9 @@
 <?php
 
+use App\Models\Post;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
-
+use Spatie\YamlFrontMatter\YamlFrontMatter;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,22 +16,35 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('posts');
+    $files = File::files(resource_path("posts"));
+    $posts = [];
+    foreach ($files as $file) {
+        $document =  YamlFrontMatter::parseFile($file);
+
+        $posts[] = new Post(
+            $document->title,
+            $document->excerpt,
+            $document->date,
+            $document->body(),
+            $document->slug
+        );
+    }
+
+    return view("posts", ["posts" => $posts]);
+
+
+    // return view('posts', [
+    //     "posts" => Post::all()
+    // ]);
+
 });
 
 Route::get("posts/{post}", function ($slug) { // wildcard route  parametro dinamico passado na rota
 
-    if (!file_exists($path = __DIR__ . "./../resources/posts/{$slug}.html")) {
-
-        return redirect("/");
-        // abort(404);   dump and die   quick debug  ddd() dump, die and debug
-    }
-    // evito ter q ler o arquivo toda vez a cada requisição
-    $post = cache()->remember("posts.{$slug}", 3600, fn () =>  file_get_contents($path));
-
+    // find a post by its slug and pass it to a view called "post
 
     return view("post", [
-        "post" => $post
+        "post" => Post::find($slug)
     ]);
 })->where("post", "[A-z_\-]+"); // posso fazer uma validacao com regex do que vai ser recebido no wildcard
 // -. whereAlpha(), whereNumber() alguns helpers pra nao ter q escrever regex
