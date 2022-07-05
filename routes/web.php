@@ -16,21 +16,31 @@ use Spatie\YamlFrontMatter\YamlFrontMatter;
 */
 
 Route::get('/', function () {
-    $files = File::files(resource_path("posts"));
-    $posts = [];
-    foreach ($files as $file) {
-        $document =  YamlFrontMatter::parseFile($file);
+    // $posts = array_map(function ($file) {
+    //     $document =  YamlFrontMatter::parseFile($file);
+    //     return new Post(
+    //         $document->title,
+    //         $document->excerpt,
+    //         $document->date,
+    //         $document->body(),
+    //         $document->slug
+    //     );
+    // }, $files);
 
-        $posts[] = new Post(
-            $document->title,
-            $document->excerpt,
-            $document->date,
-            $document->body(),
-            $document->slug
-        );
-    }
 
-    return view("posts", ["posts" => $posts]);
+    // foreach ($files as $file) {
+    //     $document =  YamlFrontMatter::parseFile($file);
+
+    //     $posts[] = new Post(
+    //         $document->title,
+    //         $document->excerpt,
+    //         $document->date,
+    //         $document->body(),
+    //         $document->slug
+    //     );
+    // }
+
+    return view("posts", ["posts" => Post::all()]);
 
 
     // return view('posts', [
@@ -43,8 +53,10 @@ Route::get("posts/{post}", function ($slug) { // wildcard route  parametro dinam
 
     // find a post by its slug and pass it to a view called "post
 
+    $post = Post::findOrFail($slug);
+
     return view("post", [
-        "post" => Post::find($slug)
+        "post" => $post
     ]);
-})->where("post", "[A-z_\-]+"); // posso fazer uma validacao com regex do que vai ser recebido no wildcard
-// -. whereAlpha(), whereNumber() alguns helpers pra nao ter q escrever regex
+}); // posso fazer uma validacao com regex do que vai ser recebido no wildcard
+//. whereAlpha(), whereNumber() alguns helpers pra nao ter q escrever regex
