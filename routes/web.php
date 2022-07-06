@@ -49,11 +49,11 @@ Route::get('/', function () {
 
 });
 
-Route::get("posts/{post}", function ($slug) { // wildcard route  parametro dinamico passado na rota
-
+Route::get("posts/{post:slug}", function (Post $post) { // wildcard route  parametro dinamico passado na rota
+//    Post::where("slug",$post)->first();
     // find a post by its slug and pass it to a view called "post
 
-    $post = Post::findOrFail($slug);
+//    $post = Post::findOrFail($id);
 
     return view("post", [
         "post" => $post
