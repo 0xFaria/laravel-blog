@@ -4,6 +4,7 @@ use App\Models\Post;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use Spatie\YamlFrontMatter\YamlFrontMatter;
+use App\Models\Category;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -60,3 +61,9 @@ Route::get("posts/{post:slug}", function (Post $post) { // wildcard route  param
     ]);
 }); // posso fazer uma validacao com regex do que vai ser recebido no wildcard
 //. whereAlpha(), whereNumber() alguns helpers pra nao ter q escrever regex
+
+Route::get("categories/{category:slug}", function (Category $category) {
+    return view("posts", [
+        "posts" => $category->posts
+    ]);
+});
