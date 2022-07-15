@@ -18,6 +18,11 @@ use App\Models\Category;
 */
 
 Route::get('/', function () {
+    $posts = Post::latest();
+    if(request("search")) {
+        $posts->where("title", "like", "%". request("search") . "%")
+        ->orWhere("body", "like", "%" . request("search") . "%");
+    }
     // $posts = array_map(function ($file) {
     //     $document =  YamlFrontMatter::parseFile($file);
     //     return new Post(
@@ -43,7 +48,7 @@ Route::get('/', function () {
     // }
 
     return view("posts",
-        ["posts" => Post::latest()->with("category", "author")->get(),
+        ["posts" => $posts->get(),
             "categories" => Category::all()
             ]);
 
