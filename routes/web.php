@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PostController;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Support\Facades\File;
@@ -17,58 +18,13 @@ use App\Models\Category;
 |
 */
 
-Route::get('/', function () {
-    $posts = Post::latest();
-    if(request("search")) {
-        $posts->where("title", "like", "%". request("search") . "%")
-        ->orWhere("body", "like", "%" . request("search") . "%");
-    }
-    // $posts = array_map(function ($file) {
-    //     $document =  YamlFrontMatter::parseFile($file);
-    //     return new Post(
-    //         $document->title,
-    //         $document->excerpt,
-    //         $document->date,
-    //         $document->body(),
-    //         $document->slug
-    //     );
-    // }, $files);
-
-
-    // foreach ($files as $file) {
-    //     $document =  YamlFrontMatter::parseFile($file);
-
-    //     $posts[] = new Post(
-    //         $document->title,
-    //         $document->excerpt,
-    //         $document->date,
-    //         $document->body(),
-    //         $document->slug
-    //     );
-    // }
-
-    return view("posts",
-        ["posts" => $posts->get(),
-            "categories" => Category::all()
-            ]);
-
+Route::get('/', [PostController::class, "index"])->name("home");
 
     // return view('posts', [
     //     "posts" => Post::all()
-    // ]);
+    // ]););
 
-});
-
-Route::get("posts/{post:slug}", function (Post $post) { // wildcard route  parametro dinamico passado na rota
-//    Post::where("slug",$post)->first();
-    // find a post by its slug and pass it to a view called "post
-
-//    $post = Post::findOrFail($id);
-
-    return view("post", [
-        "post" => $post
-    ]);
-}); // posso fazer uma validacao com regex do que vai ser recebido no wildcard
+Route::get("posts/{post:slug}", [PostController::class, "show"]); // posso fazer uma validacao com regex do que vai ser recebido no wildcard
 //. whereAlpha(), whereNumber() alguns helpers pra nao ter q escrever regex
 
 Route::get("categories/{category:slug}", function (Category $category) {
